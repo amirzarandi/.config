@@ -1,9 +1,9 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git", "clone", "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath,
-  })
+    vim.fn.system({
+        "git", "clone", "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath,
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -23,8 +23,9 @@ vim.opt.ignorecase = true
 vim.opt.smartindent = true
 vim.opt.termguicolors = true
 vim.opt.undofile = true
+vim.opt.completeopt = "menu,menuone,noselect"
 vim.opt.number = true
-vim.opt.completeopt = "menuone,noselect,popup"
+vim.opt.relativenumber = true 
 
 require("lazy").setup({
     { "vague2k/vague.nvim" },
@@ -68,11 +69,16 @@ require("lazy").setup({
     { "williamboman/mason.nvim" },
     { "williamboman/mason-lspconfig.nvim" },
 
-    { 
-        "L3MON4D3/LuaSnip",
-        config = function()
-            require("luasnip").setup({ enable_autosnippets = true })
-        end
+    {
+        "hrsh7th/nvim-cmp",
+        dependencies = {
+            "hrsh7th/cmp-nvim-lsp",     -- LSP source for nvim-cmp
+            "hrsh7th/cmp-buffer",       -- Buffer completions
+            "hrsh7th/cmp-path",         -- Path completions
+            "saadparwaiz1/cmp_luasnip", -- Snippet source for nvim-cmp
+            "rafamadriz/friendly-snippets", -- Useful snippets
+            "L3MON4D3/LuaSnip",         -- Snippet engine
+        },
     },
 })
 
@@ -96,38 +102,63 @@ require("actions-preview").setup {
     telescope = vim.tbl_extend("force", require("telescope.themes").get_dropdown(), {})
 }
 
+local cmp = require("cmp")
+local luasnip = require("luasnip")
+require("luasnip.loaders.from_vscode").lazy_load()
+
+cmp.setup({
+    snippet = {
+        expand = function(args)
+            luasnip.lsp_expand(args.body)
+        end,
+    },
+    window = {
+        completion = cmp.config.window.bordered(),
+        documentation = cmp.config.window.bordered(),
+    },
+    mapping = cmp.mapping.preset.insert({
+        ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+        ["<C-Space>"] = cmp.mapping.complete(),
+        ["<C-e>"] = cmp.mapping.abort(),
+        ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item
+    }),
+    sources = cmp.config.sources({
+        { name = "nvim_lsp" }, -- Completion from LSP (Rust, C++, Python)
+        { name = "luasnip" },  -- Snippets
+        { name = "buffer" },   -- Text from current buffer
+        { name = "path" },     -- File system paths
+    }),
+})
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
 require("mason").setup()
 require("mason-lspconfig").setup({
     ensure_installed = {
         "lua_ls",
         "rust_analyzer",
-        "clangd",
-        "pyright",
-        "ruff",
+        "clangd",   -- C++
+        "pyright",  -- Python
+        "ruff",     -- Python linting
     },
     handlers = {
+        -- The default handler for all servers
         function(server_name)
-            require("lspconfig")[server_name].setup({})
+            require("lspconfig")[server_name].setup({
+                capabilities = capabilities -- Attach capabilities here
+            })
         end,
         
+        -- Specific handler for Lua to fix the global "vim" warning
         ["lua_ls"] = function()
             require("lspconfig").lua_ls.setup({
+                capabilities = capabilities,
                 settings = {
                     Lua = { diagnostics = { globals = { "vim" } } }
                 }
             })
         end,
     },
-})
-
-vim.api.nvim_create_autocmd('LspAttach', {
-    group = vim.api.nvim_create_augroup('my.lsp', {}),
-    callback = function(args)
-        local client = vim.lsp.get_client_by_id(args.data.client_id)
-        if client and client.server_capabilities.completionProvider then
-            vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = true })
-        end
-    end,
 })
 
 local map = vim.keymap.set
