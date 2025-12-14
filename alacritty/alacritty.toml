@@ -2,7 +2,7 @@
 TERM = "screen-256color"
 
 [font]
-size = 28
+size = 20
 
 # [font.bold]
 # style = "Bold"
@@ -121,7 +121,7 @@ mods = "Command"
 
 [window]
 opacity = 1.0
-decorations = "none"
+decorations = "full"
 dynamic_padding = true
 option_as_alt = "Both"
 
