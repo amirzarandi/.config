@@ -1,5 +1,5 @@
 
-git clone https://github.com/sylvanfranklin/.config
+git clone https://github.com/amirzarandi/.config
 cd .config
 brew bundle
 
