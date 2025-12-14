@@ -1,6 +1,3 @@
-
-git clone https://github.com/amirzarandi/.config
-cd .config
 brew bundle
 
 defaults write com.apple.dock autohide -bool true

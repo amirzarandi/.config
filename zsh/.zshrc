@@ -24,14 +24,7 @@ export EDITOR="nvim"
 export MANPAGER="nvim +Man!"
 export MAILSYNC_MUTE=1
 export HISTIGNORE='exit:cd:ls:bg:fg:history:f:fd:vim'
-export GG_HOME=~/documents/work
-export GG_HOME=${GG_HOME} 
-export GG_API=${GG_HOME}/gg-api 
-export GG_WEB=${GG_HOME}/esports-web/gg-web 
-export GG_EW=${GG_HOME}/esports-web 
-export GG_GCP_USERNAME="sylvan" 
 export NODE_ENV=development 
-export PATH=${GG_API}/ops/bin:$PATH
 export PATH="/opt/homebrew/opt/php@7.4/bin:$PATH" 
 
 autoload -U compinit && compinit
@@ -57,9 +50,6 @@ nvm() {
   node $@
 }
 
-if [ -f '/Users/$USER/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/$USER/google-cloud-sdk/path.zsh.inc'; fi
-if [ -f '/Users/$USER/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/$USER/google-cloud-sdk/completion.zsh.inc'; fi
-
 alias love="/Applications/love.app/Contents/MacOS/love"
 alias cmake="cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
 alias venv="source .venv/bin/activate"
@@ -74,19 +64,11 @@ alias dl="lux"
 alias dl-audio="yt-dlp -x --audio-format=\"mp3\"" 
 alias ls="ls -C -t -U -A -p --color=auto" 
 alias src="source ~/.config/zsh/.zshrc"
-alias phpcs="${GG_API}/lib/vendor/bin/phpcs"
-alias phpmd="${GG_API}/lib/vendor/bin/phpmd"
-alias cd-ew="cd ${GG_EW}" 
-alias cd-w="cd ${GG_WEB}" 
-alias cd-a="cd ${GG_API}"
 
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init --path)"
-
-if [ -f '/Users/sf/y/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/sf/y/google-cloud-sdk/path.zsh.inc'; fi
-if [ -f '/Users/sf/y/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/sf/y/google-cloud-sdk/completion.zsh.inc'; fi
 
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
